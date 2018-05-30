@@ -59,16 +59,28 @@ def MP(dataset,query):
 
 
 def LD(dataset, query):
-    if dataset == "":
-        return len(query)
-    if query == "":
-        return len(dataset)
-    if dataset[-1] == query[-1]:
-        cost = 0
-    else:
-        cost = 1
-       
-    res = min([LD(dataset[:-1], query)+1,
-               LD(dataset, query[:-1])+1, 
-               LD(dataset[:-1], query[:-1]) + cost])
-    return res
+    size_x = len(query) + 1
+    size_y = len(dataset) + 1
+    matrix = np.zeros ((size_x, size_y))
+    #jarak dari matrix substring dataset dan substring query
+    for x in xrange(size_x):
+        matrix [x, 0] = x
+    for y in xrange(size_y):
+        matrix [0, y] = y
+
+    for x in xrange(1, size_x):
+        for y in xrange(1, size_y):
+            if query[x-1] == dataset[y-1]:
+                matrix [x,y] = min(
+                    matrix[x-1, y] + 1,
+                    matrix[x-1, y-1],
+                    matrix[x, y-1] + 1
+                )
+            else:
+                matrix [x,y] = min(
+                    matrix[x-1,y] + 1,
+                    matrix[x-1,y-1] + 1,
+                    matrix[x,y-1] + 1
+                )
+    print (matrix)
+    return (matrix.item(size_x - 1, size_y - 1))
